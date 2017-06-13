@@ -32,8 +32,6 @@ class ArticleController
     {
         $articles = $this->articlesRepository->getArticles();
 
-
-
         return $this->getHtmlResponse(
             $app,
             '/backoffice/article/article_list',
@@ -51,7 +49,6 @@ class ArticleController
     public function editArticle(Application $app, Request $request): Response
     {
         $articleId = $request->get('id');
-
         $isSubmitted = $request->get('data')['submit'];
 
         if ($isSubmitted) {
@@ -59,15 +56,13 @@ class ArticleController
             $errors = $this->validateArticleFormData($data);
 
             if (empty($errors)) {
-                //to:do save;
+                $this->saveArticleFormData($data, $articleId);
                 return new RedirectResponse('/backoffice/articles');
             }
 
         } elseif ($articleId) {
             $data = $this->getArticleFormData($articleId);
         }
-
-
 
         return $this->getHtmlResponse(
             $app,
@@ -93,9 +88,9 @@ class ArticleController
         );
 
         if (!empty($articleId)) {
-            //edit
+            $this->articlesRepository->editArticle($article, $articleId);
         } else {
-            //add
+            $this->articlesRepository->addArticle($article);
         }
     }
 
@@ -122,6 +117,17 @@ class ArticleController
     {
         $errors = [];
 
+        if (empty(trim($data['title']))) {
+            $errors['title'] = 'title is required';
+        }
+
+        if (empty(trim($data['label']))) {
+            $errors['label'] = 'label is required';
+        }
+
+        if (empty(trim($data['body']))) {
+            $errors['body'] = 'body is required';
+        }
 
         return $errors;
     }

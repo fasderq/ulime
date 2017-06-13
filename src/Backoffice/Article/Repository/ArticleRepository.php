@@ -63,11 +63,27 @@ class ArticleRepository
         return $articles;
     }
 
+    /**
+     * @param Article $article
+     */
     public function addArticle(Article $article): void
     {
         $this->client
             ->selectCollection('ulime', 'articles')
             ->insertOne($this->articleToRow($article));
+    }
+
+    /**
+     * @param Article $article
+     * @param string $id
+     */
+    public function editArticle(Article $article, string $id): void
+    {
+        $this->client
+            ->selectCollection('ulime', 'articles')
+            ->findOneAndUpdate(['_id' => new ObjectID($id)], [
+                '$set' => $this->articleToRow($article)
+            ]);
     }
 
     /**

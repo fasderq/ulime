@@ -30,7 +30,7 @@ $app->get('/test', $action(GeneralController::class, 'getTest'));
 
 $app->get('/backoffice/articles', $action(ArticleController::class, 'articlesList'));
 $app->get('/backoffice/articles/{id}/edit', $action(ArticleController::class, 'editArticle'));
-
+$app->post('/backoffice/articles/{id}/edit', $action(ArticleController::class, 'editArticle'));
 
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
