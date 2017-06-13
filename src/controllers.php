@@ -5,14 +5,33 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Ulime\Frontoffice\GeneralController;
+use Ulime\Backoffice\CatalogController;
+use Ulime\Backoffice\Section\Controller\SectionController;
+use Ulime\Backoffice\Article\Controller\ArticleController;
 
 //Request::setTrustedProxies(array('127.0.0.1'));
 
-$app->get('/', function () use ($app) {
-    return $app['twig']->render('index.html.twig', array());
-})
-->bind('homepage')
-;
+$action = function (string $className, string $method): string {
+    return sprintf(
+        '%s::%s',
+        $className,
+        $method
+    );
+};
+
+$app->get('/', $action(GeneralController::class, 'index'))->bind('homepage');
+$app->get('/catalog/{id}', $action(GeneralController::class, 'getCatalog'))->bind('catalog');
+$app->get('/test', $action(GeneralController::class, 'getTest'));
+
+//$app->get('/backoffice/test', $action(CatalogController::class, 'test'));
+//$app->get('/backoffice/test',$action(SectionController::class, 'sectionList'));
+//
+
+$app->get('/backoffice/articles', $action(ArticleController::class, 'articlesList'));
+$app->get('/backoffice/articles/{id}/edit', $action(ArticleController::class, 'editArticle'));
+
+
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
     if ($app['debug']) {

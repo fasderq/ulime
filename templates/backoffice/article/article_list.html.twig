@@ -1,0 +1,31 @@
+{% extends "/backoffice/layout.html.twig" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Label</th>
+                    <th>Body</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for id, article in articles %}
+                <tr>
+                    <td>{{ article.getTitle() }}</td>
+                    <td>{{ article.getLabel() }}</td>
+                    <td>{{ article.getBody() }}</td>
+                    <td><a href="/backoffice/articles/{{ id }}/edit">Edit</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/backoffice/articles/0/edit" class="btn btn-default">Add article</a>
+    </div>
+</div>
+
+{% endblock %}
