@@ -9,6 +9,7 @@ use Ulime\Frontoffice\GeneralController;
 use Ulime\Backoffice\CatalogController;
 use Ulime\Backoffice\Section\Controller\SectionController;
 use Ulime\Backoffice\Article\Controller\ArticleController;
+use Ulime\Backoffice\Category\Controller\CategoryController;
 
 //Request::setTrustedProxies(array('127.0.0.1'));
 
@@ -24,13 +25,20 @@ $app->get('/', $action(GeneralController::class, 'index'))->bind('homepage');
 $app->get('/catalog/{id}', $action(GeneralController::class, 'getCatalog'))->bind('catalog');
 $app->get('/test', $action(GeneralController::class, 'getTest'));
 
-//$app->get('/backoffice/test', $action(CatalogController::class, 'test'));
-//$app->get('/backoffice/test',$action(SectionController::class, 'sectionList'));
-//
+/*Backoffice*/
 
+/*Articles*/
 $app->get('/backoffice/articles', $action(ArticleController::class, 'articlesList'));
 $app->get('/backoffice/articles/{id}/edit', $action(ArticleController::class, 'editArticle'));
 $app->post('/backoffice/articles/{id}/edit', $action(ArticleController::class, 'editArticle'));
+$app->get('/backoffice/articles/{id}/delete', $action(ArticleController::class, 'deleteArticle'));
+
+/*Categories*/
+$app->get('/backoffice/categories', $action(CategoryController::class, 'categoryList'));
+$app->get('/backoffice/categories/{id}/edit', $action(CategoryController::class, 'editCategory'));
+$app->post('/backoffice/categories/{id}/edit', $action(CategoryController::class, 'editCategory'));
+$app->get('/backoffice/categories/{id}/delete', $action(CategoryController::class, 'deleteCategory'));
+
 
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {

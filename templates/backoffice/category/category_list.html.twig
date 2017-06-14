@@ -1,0 +1,32 @@
+{% extends "/backoffice/layout.html.twig" %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Name</th>
+                    <th></th>
+                    <th></th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for id, category in categories %}
+                    <tr>
+                        <td>{{ category.getTitle() }}</td>
+                        <td>{{ category.getName() }}</td>
+                        <td><a href="/backoffice/categories/{{ id }}/edit">Edit</a></td>
+                        <td><a href="/backoffice/categories/{{ id }}/delete">Delete</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <a href="/backoffice/categories/0/edit" class="btn btn-default">Add category</a>
+        </div>
+    </div>
+
+{% endblock %}

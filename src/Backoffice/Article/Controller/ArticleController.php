@@ -30,13 +30,11 @@ class ArticleController
      */
     public function articlesList(Application $app): Response
     {
-        $articles = $this->articlesRepository->getArticles();
-
         return $this->getHtmlResponse(
             $app,
             '/backoffice/article/article_list',
             [
-                'articles' => $articles
+                'articles' => $this->articlesRepository->getArticles()
             ]
         );
     }
@@ -57,6 +55,7 @@ class ArticleController
 
             if (empty($errors)) {
                 $this->saveArticleFormData($data, $articleId);
+
                 return new RedirectResponse('/backoffice/articles');
             }
 
@@ -92,6 +91,17 @@ class ArticleController
         } else {
             $this->articlesRepository->addArticle($article);
         }
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function deleteArticle(Request $request): RedirectResponse
+    {
+        $this->articlesRepository->deleteArticle($request->get('id'));
+
+        return new RedirectResponse('/backoffice/articles');
     }
 
     /**

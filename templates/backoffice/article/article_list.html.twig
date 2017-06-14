@@ -11,6 +11,7 @@
                     <th>Label</th>
                     <th>Body</th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -20,6 +21,7 @@
                     <td>{{ article.getLabel() }}</td>
                     <td>{{ article.getBody() }}</td>
                     <td><a href="/backoffice/articles/{{ id }}/edit">Edit</a></td>
+                    <td><a href="/backoffice/articles/{{ id }}/delete">Delete</a></td>
                 </tr>
                 {% endfor %}
             </tbody>

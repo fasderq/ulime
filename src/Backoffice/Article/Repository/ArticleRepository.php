@@ -56,8 +56,7 @@ class ArticleRepository
 
         $articles = [];
         foreach ($data as $article) {
-            $ids = get_object_vars($article->_id);
-            $articles[$ids['oid']] = $this->rowToArticle($article);
+            $articles[get_object_vars($article->_id)['oid']] = $this->rowToArticle($article);
         }
 
         return $articles;
@@ -84,6 +83,16 @@ class ArticleRepository
             ->findOneAndUpdate(['_id' => new ObjectID($id)], [
                 '$set' => $this->articleToRow($article)
             ]);
+    }
+
+    /**
+     * @param string $id
+     */
+    public function deleteArticle(string $id): void
+    {
+        $this->client
+            ->selectCollection('ulime', 'articles')
+            ->deleteOne(['_id' => new ObjectID($id)]);
     }
 
     /**
