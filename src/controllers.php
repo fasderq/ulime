@@ -10,6 +10,7 @@ use Ulime\Backoffice\CatalogController;
 use Ulime\Backoffice\Section\Controller\SectionController;
 use Ulime\Backoffice\Article\Controller\ArticleController;
 use Ulime\Backoffice\Category\Controller\CategoryController;
+use Ulime\API\Controller\ApiController;
 
 //Request::setTrustedProxies(array('127.0.0.1'));
 
@@ -39,6 +40,9 @@ $app->get('/backoffice/categories/{id}/edit', $action(CategoryController::class,
 $app->post('/backoffice/categories/{id}/edit', $action(CategoryController::class, 'editCategory'));
 $app->get('/backoffice/categories/{id}/delete', $action(CategoryController::class, 'deleteCategory'));
 
+/*API*/
+$app->get('/categories', $action(ApiController::class, 'getCategories'));
+$app->get('/category/{name}', $action(ApiController::class, 'getArticles'));
 
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
