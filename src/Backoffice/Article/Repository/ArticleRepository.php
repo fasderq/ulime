@@ -24,15 +24,15 @@ class ArticleRepository
     }
 
     /**
-     * @param string $id
+     * @param string $name
      * @return Article
      * @throws \Exception
      */
-    public function getArticleById(string $id): Article
+    public function getArticleByName(string $name): Article
     {
         $article = $this->client
             ->selectCollection('ulime', 'articles')
-            ->findOne(['_id' => new ObjectID($id)]);
+            ->findOne(['name' => $name]);
 
         if (!empty($article)) {
             if ($article instanceof BSONDocument) {
@@ -56,7 +56,7 @@ class ArticleRepository
 
         $articles = [];
         foreach ($data as $article) {
-            $articles[get_object_vars($article->_id)['oid']] = $this->rowToArticle($article);
+            $articles[] = $this->rowToArticle($article);
         }
 
         return $articles;
@@ -74,25 +74,25 @@ class ArticleRepository
 
     /**
      * @param Article $article
-     * @param string $id
+     * @param string $name
      */
-    public function editArticle(Article $article, string $id): void
+    public function editArticle(Article $article, string $name): void
     {
         $this->client
             ->selectCollection('ulime', 'articles')
-            ->findOneAndUpdate(['_id' => new ObjectID($id)], [
+            ->findOneAndUpdate(['name' => $name], [
                 '$set' => $this->articleToRow($article)
             ]);
     }
 
     /**
-     * @param string $id
+     * @param string $name
      */
-    public function deleteArticle(string $id): void
+    public function deleteArticle(string $name): void
     {
         $this->client
             ->selectCollection('ulime', 'articles')
-            ->deleteOne(['_id' => new ObjectID($id)]);
+            ->deleteOne(['name' => $name]);
     }
 
     /**
@@ -102,6 +102,7 @@ class ArticleRepository
     public function rowToArticle(BSONDocument $row): Article
     {
         return new Article(
+            $row->name,
             $row->title,
             $row->label,
             $row->body
@@ -115,6 +116,7 @@ class ArticleRepository
     public function articleToRow(Article $article): array
     {
         return [
+            'name' => $article->getName(),
             'title' => $article->getTitle(),
             'label' => $article->getLabel(),
             'body' => $article->getBody()

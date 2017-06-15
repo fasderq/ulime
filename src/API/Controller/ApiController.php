@@ -4,6 +4,7 @@ namespace Ulime\API\Controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Ulime\API\Repository\CategoryRepository;
 
 /**
@@ -23,23 +24,41 @@ class ApiController
     }
 
     /**
-     * @return JsonResponse
+     * @return string
      */
-    public function getCategories(): JsonResponse
+    public function getCategories(): string
     {
-        return new JsonResponse($this->categoryRepository->getCategories());
+        return $this->getJsonResponse(
+            $this->categoryRepository->getCategories()
+        )->getContent();
     }
 
     /**
      * @param Request $request
-     * @return JsonResponse
+     * @return string
      */
-    public function getArticles(Request $request): JsonResponse
+    public function getArticles(Request $request): string
     {
-        return new JsonResponse(
+        return $this->getJsonResponse(
             $this->categoryRepository->getArticlesByCategory(
                 $request->get('name')
             )
-        );
+        )->getContent();
+    }
+
+    /**
+     * @param array $data
+     * @return JsonResponse
+     */
+    protected function getJsonResponse(array $data = []): JsonResponse
+    {
+        $jsonResponse = new JsonResponse();
+        $jsonResponse->setCharset('UTF-8');
+        $jsonResponse->headers->set('Content-Type', 'application/json');
+        $jsonResponse->setStatusCode(Response::HTTP_OK);
+        $jsonResponse->setData($data);
+        $jsonResponse->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        return $jsonResponse;
     }
 }

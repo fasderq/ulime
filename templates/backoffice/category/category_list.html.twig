@@ -11,21 +11,20 @@
                     <th>Name</th>
                     <th></th>
                     <th></th>
-
                 </tr>
                 </thead>
                 <tbody>
-                {% for id, category in categories %}
+                {% for category in categories %}
                     <tr>
                         <td>{{ category.getTitle() }}</td>
                         <td>{{ category.getName() }}</td>
-                        <td><a href="/backoffice/categories/{{ id }}/edit">Edit</a></td>
-                        <td><a href="/backoffice/categories/{{ id }}/delete">Delete</a></td>
+                        <td><a href="/backoffice/category/{{ category.getName() }}/edit">Edit</a></td>
+                        <td><a href="/backoffice/category/{{ category.getName() }}/delete">Delete</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <a href="/backoffice/categories/0/edit" class="btn btn-default">Add category</a>
+            <a href="/backoffice/category/0/edit" class="btn btn-default">Add category</a>
         </div>
     </div>
 

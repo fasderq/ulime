@@ -1,38 +1,34 @@
 <?php
-namespace Ulime\Backoffice\Article\Model;
+namespace Ulime\Frontoffice\General\Model;
+
 /**
  * Class Article
- * @package Ulime\Backoffice\Article\Model
+ * @package Ulime\Frontoffice\General\Model
  */
 class Article
 {
-    protected $name;
     protected $title;
     protected $label;
     protected $body;
+    protected $views;
 
     /**
      * Article constructor.
-     * @param string $name
      * @param string $title
      * @param string $label
      * @param string $body
+     * @param int|null $views
      */
     public function __construct(
-        string $name,
         string $title,
         string $label,
-        string $body
+        string $body,
+        ?int $views = null
     ) {
-        $this->name = $name;
         $this->title = $title;
         $this->label = $label;
         $this->body = $body;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
+        $this->views = $views;
     }
 
     /**
@@ -57,5 +53,13 @@ class Article
     public function getBody(): string
     {
         return $this->body;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getViews(): ?int
+    {
+        return $this->views;
     }
 }

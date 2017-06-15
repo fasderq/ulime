@@ -46,7 +46,7 @@ class ArticleController
      */
     public function editArticle(Application $app, Request $request): Response
     {
-        $articleId = $request->get('id');
+        $articleName = $request->get('name');
         $isSubmitted = $request->get('data')['submit'];
 
         if ($isSubmitted) {
@@ -54,20 +54,20 @@ class ArticleController
             $errors = $this->validateArticleFormData($data);
 
             if (empty($errors)) {
-                $this->saveArticleFormData($data, $articleId);
+                $this->saveArticleFormData($data, $articleName);
 
                 return new RedirectResponse('/backoffice/articles');
             }
 
-        } elseif ($articleId) {
-            $data = $this->getArticleFormData($articleId);
+        } elseif ($articleName) {
+            $data = $this->getArticleFormData($articleName);
         }
 
         return $this->getHtmlResponse(
             $app,
             '/backoffice/article/article_edit',
             [
-                'id' => $articleId,
+                'name' => $articleName,
                 'data' => $data ?? [],
                 'errors' => $errors ?? []
             ]
@@ -76,18 +76,19 @@ class ArticleController
 
     /**
      * @param array $data
-     * @param string|null $articleId
+     * @param string|null $articleName
      */
-    protected function saveArticleFormData(array $data, ?string $articleId = null): void
+    protected function saveArticleFormData(array $data, ?string $articleName = null): void
     {
         $article = new Article(
+            $data['name'],
             $data['title'],
             $data['label'],
             $data['body']
         );
 
-        if (!empty($articleId)) {
-            $this->articlesRepository->editArticle($article, $articleId);
+        if (!empty($articleName)) {
+            $this->articlesRepository->editArticle($article, $articleName);
         } else {
             $this->articlesRepository->addArticle($article);
         }
@@ -99,20 +100,21 @@ class ArticleController
      */
     public function deleteArticle(Request $request): RedirectResponse
     {
-        $this->articlesRepository->deleteArticle($request->get('id'));
+        $this->articlesRepository->deleteArticle($request->get('name'));
 
         return new RedirectResponse('/backoffice/articles');
     }
 
     /**
-     * @param string $id
+     * @param string $name
      * @return array
      */
-    protected function getArticleFormData(string $id): array
+    protected function getArticleFormData(string $name): array
     {
-        $article = $this->articlesRepository->getArticleById($id);
+        $article = $this->articlesRepository->getArticleByName($name);
 
         return [
+            'name' => $article->getName(),
             'title' => $article->getTitle(),
             'label' => $article->getLabel(),
             'body' => $article->getBody()
@@ -126,6 +128,10 @@ class ArticleController
     protected function validateArticleFormData(array $data): array
     {
         $errors = [];
+
+        if (empty(trim($data['name']))) {
+            $errors['name'] = 'name is required';
+        }
 
         if (empty(trim($data['title']))) {
             $errors['title'] = 'title is required';

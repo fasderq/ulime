@@ -2,7 +2,6 @@
 namespace Ulime\Backoffice\Category\Repository;
 
 
-use MongoDB\BSON\ObjectID;
 use MongoDB\Client;
 use MongoDB\Model\BSONDocument;
 use Ulime\Backoffice\Article\Model\Article;
@@ -25,15 +24,15 @@ class CategoryRepository
     }
 
     /**
-     * @param string $id
+     * @param string $name
      * @return Category
      * @throws \Exception
      */
-    public function getCategoryById(string $id): Category
+    public function getCategoryByName(string $name): Category
     {
         $category = $this->client
             ->selectCollection('ulime', 'categories')
-            ->findOne(['_id' => new ObjectID($id)]);
+            ->findOne(['name' => $name]);
 
         if (!empty($category)) {
             if ($category instanceof BSONDocument) {
@@ -59,7 +58,7 @@ class CategoryRepository
         $categories = [];
 
         foreach ($data as $category) {
-            $categories[get_object_vars($category->_id)['oid']] = $this->rowToCategory($category);
+            $categories[] = $this->rowToCategory($category);
         }
 
         return $categories;
@@ -77,25 +76,25 @@ class CategoryRepository
 
     /**
      * @param Category $category
-     * @param string $id
+     * @param string $name
      */
-    public function editCategory(Category $category, string $id): void
+    public function editCategory(Category $category, string $name): void
     {
         $this->client
             ->selectCollection('ulime', 'categories')
-            ->findOneAndUpdate(['_id' => new ObjectID($id)], [
+            ->findOneAndUpdate(['name' => $name], [
                 '$set' => $this->categoryToRow($category)
             ]);
     }
 
     /**
-     * @param string $id
+     * @param string $name
      */
-    public function deleteCategory(string $id): void
+    public function deleteCategory(string $name): void
     {
         $this->client
             ->selectCollection('ulime', 'categories')
-            ->deleteOne(['_id' => new ObjectID($id)]);
+            ->deleteOne(['name' => $name]);
     }
 
     /**
@@ -105,8 +104,8 @@ class CategoryRepository
     protected function rowToCategory(BSONDocument $row): Category
     {
         $articles = [];
-        foreach ($row->articles as $articleId => $article) {
-            $articles[$articleId] = $this->rowToArticle($article);
+        foreach ($row->articles as $article) {
+            $articles[] = $this->rowToArticle($article);
         }
 
         return new Category(
@@ -123,6 +122,7 @@ class CategoryRepository
     protected function rowToArticle(BSONDocument $row): Article
     {
         return new Article(
+            $row->name,
             $row->title,
             $row->label,
             $row->body
@@ -154,6 +154,7 @@ class CategoryRepository
     protected function articleToRow(Article $article): array
     {
         return [
+            'name' => $article->getName(),
             'title' => $article->getTitle(),
             'label' => $article->getLabel(),
             'body' => $article->getBody()

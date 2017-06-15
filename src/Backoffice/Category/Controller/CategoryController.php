@@ -51,27 +51,26 @@ class CategoryController
      */
     public function editCategory(Application $app, Request $request): Response
     {
-        $categoryId = $request->get('id');
-        $isSubmitted = $request->get('data')['submit'];
+        $categoryName = $request->get('name');
 
-        if ($isSubmitted) {
+        if ($request->get('data')['submit']) {
             $data = $request->get('data');
             $errors = $this->validateCategoryFormData($data);
 
             if (empty($errors)) {
-                $this->saveCategoryFormData($data, $categoryId);
+                $this->saveCategoryFormData($data, $categoryName);
 
                 return new RedirectResponse('/backoffice/categories');
             }
-        } elseif ($categoryId) {
-            $data = $this->getCategoryFormData($categoryId);
+        } elseif ($categoryName) {
+            $data = $this->getCategoryFormData($categoryName);
         }
 
         return $this->getHtmlResponse(
             $app,
             '/backoffice/category/category_edit',
             [
-                'id' => $categoryId,
+                'id' => $categoryName,
                 'errors' => $errors ?? [],
                 'data' => $data ?? [],
                 'articles' => $this->articleRepository->getArticles()
@@ -92,16 +91,16 @@ class CategoryController
 
     /**
      * @param array $data
-     * @param null|string $categoryId
+     * @param null|string $categoryName
      */
-    protected function saveCategoryFormData(array $data, ?string $categoryId = null): void
+    protected function saveCategoryFormData(array $data, ?string $categoryName = null): void
     {
-        $articlesIds = $data['articles'] ?? [];
+        $articleNames = $data['articles'] ?? [];
 
         $articles = [];
-        foreach ($articlesIds as $articleId => $article) {
-            if (1 === (int)$article['is_active']) {
-                $articles[$articleId] = $this->articleRepository->getArticleById($articleId);
+        foreach ($articleNames as $articleName => $article) {
+            if ($article['is_active']) {
+                $articles[] = $this->articleRepository->getArticleByName($articleName);
             }
         }
 
@@ -111,40 +110,38 @@ class CategoryController
             $articles
         );
 
-        if (!empty($categoryId)) {
-            $this->categoryRepository->editCategory($category, $categoryId);
+        if (!empty($categoryName)) {
+            $this->categoryRepository->editCategory($category, $categoryName);
         } else {
             $this->categoryRepository->addCategory($category);
         }
     }
 
     /**
-     * @param string $id
+     * @param string $name
      * @return array
      */
-    protected function getCategoryFormData(string $id): array
+    protected function getCategoryFormData(string $name): array
     {
-        $category = $this->categoryRepository->getCategoryById($id);
-
-        $articles = [];
-        foreach ($category->getArticles() as $articleId => $article) {
-            $articles[$articleId] = array_reduce(
-                [$article],
-                function (array $row, Article $article) {
-                    return $row + [
-                        'title' => $article->getTitle(),
-                        'label' => $article->getLabel(),
-                        'body' => $article->getBody()
-                    ];
-                },
-                []
-            );
-        }
+        $category = $this->categoryRepository->getCategoryByName($name);
 
         return [
             'title' => $category->getTitle(),
             'name' => $category->getName(),
-            'articles' => $articles
+            'articles' => array_reduce(
+                $category->getArticles(),
+                function (array $articles, Article $article) {
+                       return $articles + [
+                            $article->getName() => [
+                                'name' => $article->getName(),
+                                'title' => $article->getTitle(),
+                                'label' => $article->getLabel(),
+                                'body' => $article->getBody()
+                            ]
+                       ];
+                },
+                []
+            )
         ];
     }
 

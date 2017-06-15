@@ -1,0 +1,21 @@
+{% extends '/frontoffice/layout.html.twig' %}
+
+{% block content %}
+
+        {% for article in articles %}
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="page-header"><h1>{{ article.getTitle() }}</h1></div>
+                    <h3>{{ article.getLabel() }}</h3>
+                    <div>{{ article.getBody() }}</div>
+                    <hr>
+                    <div class="text-right">
+                        {% if article.getViews() > 0  %}
+                            <span class="badge">Views: {{ article.getViews() }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+{% endblock %}

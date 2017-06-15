@@ -1,13 +1,30 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-sdfsdfdf
-</body>
-</html>
+{% extends '/backoffice/layout.html.twig' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Title</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for section in sections %}
+                    <tr>
+                        <td>{{ section.getName() }}</td>
+                        <td>{{ section.getTitle() }}</td>
+                        <td><a href="/backoffice/section/{{ section.getName() }}/edit">Edit</a></td>
+                        <td><a href="/backoffice/section/{{ section.getName() }}/delete">Delete</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

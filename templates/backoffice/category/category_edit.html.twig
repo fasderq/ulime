@@ -13,21 +13,20 @@
                 </ul>
             {% endif %}
 
-            <form action="/backoffice/categories/{{ id }}/edit" method="post">
+            <form action="/backoffice/category/{{ id }}/edit" method="post">
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input type="text" class="form-control" id="title" name="data[title]" value="{{ data['title'] ?? null }}">
                     <label for="name">Name</label>
                     <input type="text" class="form-control" id="name" name="data[name]" value="{{ data['name'] ?? null}}">
-                    {% for id, article in articles %}
-
-                        <input type="checkbox" name="data[articles][{{ id }}][is_active]" value="1"
+                    {% for article in articles %}
+                        <input type="checkbox" name="data[articles][{{ article.getName() }}][is_active]" value="1"
                         {% if data['articles'] is defined %}
-                        {% if id in data['articles']|keys %}
-                            checked {% endif %}
+                            {% if article.getName() in data['articles']|keys  %}
+                                checked
+                            {% endif %}
                         {% endif %}
-                        >{{ article.getTitle() }}
-
+                        >{{ article.getName() }}
                     {% endfor %}
                 </div>
                 <button type="submit" class="btn btn-default" name="data[submit]" value="submit">Edit</button>
