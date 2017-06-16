@@ -92,6 +92,7 @@ class SectionController
             }
         }
 
+
         $section = new Section(
             $data['title'],
             $data['name'],

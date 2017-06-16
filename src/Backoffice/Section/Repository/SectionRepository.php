@@ -80,7 +80,7 @@ class SectionRepository
     public function editSection(Section $section, string $sectionName): void
     {
         $this->client
-            ->selectCollection('ulime', 'categories')
+            ->selectCollection('ulime', 'section')
             ->findOneAndUpdate(
                 ['name' => $sectionName],
                 ['$set' => $this->sectionToRow($section)]
