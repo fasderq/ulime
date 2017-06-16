@@ -36,7 +36,7 @@ class CategoryRepository
 
         if (!empty($category)) {
             if ($category instanceof BSONDocument) {
-                return $this->rowToCategory($category);
+                return $this->documentToCategory($category);
             } else {
                 throw new \Exception('db error');
             }
@@ -56,9 +56,8 @@ class CategoryRepository
             ->toArray();
 
         $categories = [];
-
         foreach ($data as $category) {
-            $categories[] = $this->rowToCategory($category);
+            $categories[] = $this->documentToCategory($category);
         }
 
         return $categories;
@@ -82,9 +81,10 @@ class CategoryRepository
     {
         $this->client
             ->selectCollection('ulime', 'categories')
-            ->findOneAndUpdate(['name' => $name], [
-                '$set' => $this->categoryToRow($category)
-            ]);
+            ->findOneAndUpdate(
+                ['name' => $name],
+                ['$set' => $this->categoryToRow($category)]
+            );
     }
 
     /**
@@ -98,19 +98,21 @@ class CategoryRepository
     }
 
     /**
-     * @param BSONDocument $row
+     * @param BSONDocument $document
      * @return Category
      */
-    protected function rowToCategory(BSONDocument $row): Category
+    protected function documentToCategory(BSONDocument $document): Category
     {
         $articles = [];
-        foreach ($row->articles as $article) {
-            $articles[] = $this->rowToArticle($article);
+        if (!empty($document->articles)) {
+            foreach ($document->articles as $article) {
+                $articles[] = $this->rowToArticle($article);
+            }
         }
 
         return new Category(
-            $row->title,
-            $row->name,
+            $document->title,
+            $document->name,
             $articles
         );
     }
@@ -136,8 +138,8 @@ class CategoryRepository
     protected function categoryToRow(Category $category): array
     {
         $articles = [];
-        foreach ($category->getArticles() as $articleId => $article) {
-            $articles[$articleId] = $this->articleToRow($article);
+        foreach ($category->getArticles() as $article) {
+            $articles[] = $this->articleToRow($article);
         }
 
         return [
@@ -160,5 +162,4 @@ class CategoryRepository
             'body' => $article->getBody()
         ];
     }
-
 }

@@ -84,7 +84,7 @@ class CategoryController
      */
     public function deleteCategory(Request $request): RedirectResponse
     {
-        $this->categoryRepository->deleteCategory($request->get('id'));
+        $this->categoryRepository->deleteCategory($request->get('name'));
 
         return new RedirectResponse('/backoffice/categories');
     }

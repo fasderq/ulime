@@ -19,8 +19,18 @@
                 <input type="text" class="form-control" id="name" name="data[name]" value="{{ data['name'] ?? null }}">
                 <label for="title">Title</label>
                 <input type="text" class="form-control" id="title" name="data[title]" value="{{ data['title'] ?? null }}">
+                {% for category in categories %}
+
+                    <input type="checkbox" name="data[categories][{{ category.getName() }}][is_active]" value="1"
+                    {% if data['categories'] is defined %}
+                        {% if category.getName() in data['categories']|keys %}
+                            checked
+                        {% endif %}
+                    {% endif %}>{{ category.getName() }}
+
+                {% endfor %}
             </div>
-            <button type="submit" name="submit" value="submit" class="btn btn-default">Edit</button>
+            <button type="submit" name="data[submit]" value="submit" class="btn btn-default">Edit</button>
         </form>
     </div>
 </div>

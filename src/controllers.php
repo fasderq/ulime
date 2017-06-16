@@ -2,10 +2,6 @@
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Ulime\Backoffice\CatalogController;
 use Ulime\Backoffice\Section\Controller\SectionController;
 use Ulime\Backoffice\Article\Controller\ArticleController;
 use Ulime\Backoffice\Category\Controller\CategoryController;
@@ -22,16 +18,11 @@ $action = function (string $className, string $method): string {
     );
 };
 
-
 /*Frontoffice*/
 
 $app->get('/', $action(GeneralController::class, 'index'));
 
 
-
-//$app->get('/', $action(GeneralController::class, 'index'))->bind('homepage');
-//$app->get('/catalog/{id}', $action(GeneralController::class, 'getCatalog'))->bind('catalog');
-//$app->get('/test', $action(GeneralController::class, 'getTest'));
 
 /*Backoffice*/
 
@@ -49,9 +40,9 @@ $app->get('/backoffice/category/{name}/delete', $action(CategoryController::clas
 
 /*Sections*/
 $app->get('/backoffice/sections', $action(SectionController::class, 'sectionsList'));
-$app->get('/backoffice/section/{id}/edit', $action(SectionController::class, 'editSection'));
-$app->post('/backoffice/section/{id}/edit', $action(SectionController::class, 'editSection'));
-$app->get('/backoffice/section/{id}/delete', $action(SectionController::class, 'deleteSection'));
+$app->get('/backoffice/section/{name}/edit', $action(SectionController::class, 'editSection'));
+$app->post('/backoffice/section/{name}/edit', $action(SectionController::class, 'editSection'));
+$app->get('/backoffice/section/{name}/delete', $action(SectionController::class, 'deleteSection'));
 
 /*API*/
 $app->get('/categories', $action(ApiController::class, 'getCategories'));
