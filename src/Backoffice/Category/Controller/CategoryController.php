@@ -22,11 +22,15 @@ class CategoryController
 
     /**
      * CategoryController constructor.
+     * @param CategoryRepository $categoryRepository
+     * @param ArticleRepository $articleRepository
      */
-    public function __construct()
-    {
-        $this->categoryRepository = new CategoryRepository();
-        $this->articleRepository = new ArticleRepository();
+    public function __construct(
+        CategoryRepository $categoryRepository,
+        ArticleRepository $articleRepository
+    ) {
+        $this->categoryRepository = $categoryRepository;
+        $this->articleRepository = $articleRepository;
     }
 
     /**

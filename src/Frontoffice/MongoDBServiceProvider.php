@@ -36,6 +36,7 @@ class MongoDBServiceProvider implements ServiceProviderInterface
                 $app['mongodb.config']['options'],
                 $app['mongodb.config']['driverOptions']
             );
+
             return $client;
         };
     }

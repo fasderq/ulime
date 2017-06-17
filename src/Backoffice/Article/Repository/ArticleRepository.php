@@ -2,7 +2,6 @@
 namespace Ulime\Backoffice\Article\Repository;
 
 
-use MongoDB\BSON\ObjectID;
 use MongoDB\Client;
 use MongoDB\Model\BSONDocument;
 use Ulime\Backoffice\Article\Model\Article;
@@ -17,10 +16,11 @@ class ArticleRepository
 
     /**
      * ArticleRepository constructor.
+     * @param Client $client
      */
-    public function __construct()
+    public function __construct(Client $client)
     {
-        $this->client = new Client();
+        $this->client = $client;
     }
 
     /**
@@ -83,6 +83,22 @@ class ArticleRepository
             ->findOneAndUpdate(['name' => $name], [
                 '$set' => $this->articleToRow($article)
             ]);
+
+        $this->client
+            ->selectCollection('ulime', 'categories')
+            ->updateMany(
+                [
+                    'articles' => [
+                        '$elemMatch' => [
+                            'name' => $name
+                        ]
+                    ]
+                ],
+                [
+                    '$set' => ['articles.$'  => $this->articleToRow($article)]
+                ],
+                ['multi' => true]
+            );
     }
 
     /**
@@ -93,6 +109,20 @@ class ArticleRepository
         $this->client
             ->selectCollection('ulime', 'articles')
             ->deleteOne(['name' => $name]);
+
+        $this->client
+            ->selectCollection('ulime', 'categories')
+            ->updateMany(
+                [],
+                [
+                    '$pull' => [
+                        'articles' => [
+                            'name' => $name
+                        ]
+                    ]
+                ],
+                ['multi' => true]
+            );
     }
 
     /**

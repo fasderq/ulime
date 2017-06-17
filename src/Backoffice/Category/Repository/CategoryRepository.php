@@ -17,10 +17,11 @@ class CategoryRepository
 
     /**
      * CategoryRepository constructor.
+     * @param Client $client
      */
-    public function __construct()
+    public function __construct(Client $client)
     {
-        $this->client = new Client();
+        $this->client = $client;
     }
 
     /**
@@ -85,6 +86,22 @@ class CategoryRepository
                 ['name' => $name],
                 ['$set' => $this->categoryToRow($category)]
             );
+
+        $this->client
+            ->selectCollection('ulime', 'section')
+            ->updateMany(
+                [
+                    'articles' => [
+                        '$elemMatch' => [
+                            'name' => $name
+                        ]
+                    ]
+                ],
+                [
+                    '$set' => ['categories.$'  => $this->categoryToRow($category)]
+                ],
+                ['multi' => true]
+            );
     }
 
     /**
@@ -95,6 +112,20 @@ class CategoryRepository
         $this->client
             ->selectCollection('ulime', 'categories')
             ->deleteOne(['name' => $name]);
+
+        $this->client
+            ->selectCollection('ulime', 'section')
+            ->updateMany(
+                [],
+                [
+                    '$pull' => [
+                        'categories' => [
+                            'name' => $name
+                        ]
+                    ]
+                ],
+                ['multi' => true]
+            );
     }
 
     /**

@@ -2,51 +2,38 @@
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Ulime\Backoffice\Section\Controller\SectionController;
-use Ulime\Backoffice\Article\Controller\ArticleController;
-use Ulime\Backoffice\Category\Controller\CategoryController;
-use Ulime\API\Controller\ApiController;
-use Ulime\Frontoffice\General\Controller\GeneralController;
 
 //Request::setTrustedProxies(array('127.0.0.1'));
 
-$action = function (string $className, string $method): string {
-    return sprintf(
-        '%s::%s',
-        $className,
-        $method
-    );
-};
-
 /*Frontoffice*/
 
-$app->get('/', $action(GeneralController::class, 'index'));
+//$app->get('/', $action(GeneralController::class, 'index'));
 
 
 
 /*Backoffice*/
 
 /*Articles*/
-$app->get('/backoffice/articles', $action(ArticleController::class, 'articlesList'));
-$app->get('/backoffice/article/{name}/edit', $action(ArticleController::class, 'editArticle'));
-$app->post('/backoffice/article/{name}/edit', $action(ArticleController::class, 'editArticle'));
-$app->get('/backoffice/article/{name}/delete', $action(ArticleController::class, 'deleteArticle'));
+$app->get('/backoffice/articles', 'backoffice.article.controller:articlesList');
+$app->get('/backoffice/article/{name}/edit', 'backoffice.article.controller:editArticle');
+$app->post('/backoffice/article/{name}/edit', 'backoffice.article.controller:editArticle');
+$app->get('/backoffice/article/{name}/delete', 'backoffice.article.controller:deleteArticle');
 
 /*Categories*/
-$app->get('/backoffice/categories', $action(CategoryController::class, 'categoryList'));
-$app->get('/backoffice/category/{name}/edit', $action(CategoryController::class, 'editCategory'));
-$app->post('/backoffice/category/{name}/edit', $action(CategoryController::class, 'editCategory'));
-$app->get('/backoffice/category/{name}/delete', $action(CategoryController::class, 'deleteCategory'));
+$app->get('/backoffice/categories', 'backoffice.category.controller:categoryList');
+$app->get('/backoffice/category/{name}/edit', 'backoffice.category.controller:editCategory');
+$app->post('/backoffice/category/{name}/edit', 'backoffice.category.controller:editCategory');
+$app->get('/backoffice/category/{name}/delete', 'backoffice.category.controller:deleteCategory');
 
 /*Sections*/
-$app->get('/backoffice/sections', $action(SectionController::class, 'sectionsList'));
-$app->get('/backoffice/section/{name}/edit', $action(SectionController::class, 'editSection'));
-$app->post('/backoffice/section/{name}/edit', $action(SectionController::class, 'editSection'));
-$app->get('/backoffice/section/{name}/delete', $action(SectionController::class, 'deleteSection'));
+$app->get('/backoffice/sections', 'backoffice.section.controller:sectionsList');
+$app->get('/backoffice/section/{name}/edit', 'backoffice.section.controller:editSection');
+$app->post('/backoffice/section/{name}/edit', 'backoffice.section.controller:editSection');
+$app->get('/backoffice/section/{name}/delete', 'backoffice.section.controller:deleteSection');
 
 /*API*/
-$app->get('/categories', $action(ApiController::class, 'getCategories'));
-$app->get('/category/{name}', $action(ApiController::class, 'getArticles'));
+//$app->get('/categories', $action(ApiController::class, 'getCategories'));
+//$app->get('/category/{name}', $action(ApiController::class, 'getArticles'));
 
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {

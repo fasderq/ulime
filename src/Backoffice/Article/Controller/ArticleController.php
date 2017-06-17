@@ -18,10 +18,11 @@ class ArticleController
 
     /**
      * ArticleController constructor.
+     * @param ArticleRepository $articleRepository
      */
-    public function __construct()
+    public function __construct(ArticleRepository $articleRepository)
     {
-        $this->articlesRepository = new ArticleRepository();
+        $this->articlesRepository = $articleRepository;
     }
 
     /**

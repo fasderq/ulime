@@ -21,11 +21,15 @@ class SectionController
 
     /**
      * SectionController constructor.
+     * @param SectionRepository $sectionRepository
+     * @param CategoryRepository $categoryRepository
      */
-    public function __construct()
-    {
-        $this->sectionRepository = new SectionRepository();
-        $this->categoryRepository = new CategoryRepository();
+    public function __construct(
+        SectionRepository $sectionRepository,
+        CategoryRepository $categoryRepository
+    ) {
+        $this->sectionRepository = $sectionRepository;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
