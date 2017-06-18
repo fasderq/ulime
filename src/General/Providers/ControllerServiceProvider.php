@@ -1,12 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: alex
- * Date: 16.06.17
- * Time: 14:08
- */
-
-namespace Ulime\Backoffice;
+namespace Ulime\General\Providers;
 
 
 use Pimple\Container;
@@ -14,6 +7,8 @@ use Pimple\ServiceProviderInterface;
 use Ulime\Backoffice\Article\Controller\ArticleController;
 use Ulime\Backoffice\Category\Controller\CategoryController;
 use Ulime\Backoffice\Section\Controller\SectionController;
+use Ulime\Backoffice\User\Controller\AuthController;
+use Ulime\Frontoffice\General\Controller\GeneralController;
 
 class ControllerServiceProvider implements ServiceProviderInterface
 {
@@ -24,16 +19,32 @@ class ControllerServiceProvider implements ServiceProviderInterface
      * This method should only be used to configure services and parameters.
      * It should not get services.
      *
-     * @param Container $pimple A container instance
+     * @param Container $app A container instance
      */
     public function register(Container $app)
     {
+        $app['backoffice.auth.controller'] = function () use ($app) {
+            return new AuthController(
+                $app['renderer'],
+                $app['user.service'],
+                $app['session.service']
+            );
+        };
+
         $app['backoffice.article.controller'] = function () use ($app) {
-            return new ArticleController($app['backoffice.article.repository']);
+            return new ArticleController(
+                $app['renderer'],
+                $app['user.service'],
+                $app['session.service'],
+                $app['backoffice.article.repository']
+            );
         };
 
         $app['backoffice.category.controller'] = function () use ($app) {
             return new CategoryController(
+                $app['renderer'],
+                $app['user.service'],
+                $app['session.service'],
                 $app['backoffice.category.repository'],
                 $app['backoffice.article.repository']
             );
@@ -41,9 +52,15 @@ class ControllerServiceProvider implements ServiceProviderInterface
 
         $app['backoffice.section.controller'] = function () use ($app) {
             return new SectionController(
+                $app['renderer'],
                 $app['backoffice.section.repository'],
-                $app['backoffice.category.repository']
+                $app['backoffice.category.repository'],
+                $app['session.service']
             );
+        };
+
+        $app['frontoffice.general.controller'] = function () use ($app) {
+            return new GeneralController($app['frontoffice.general.repository']);
         };
     }
 }

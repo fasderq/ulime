@@ -7,6 +7,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Ulime\Backoffice\Article\Model\Article;
 use Ulime\Backoffice\Article\Repository\ArticleRepository;
+use Ulime\Backoffice\User\Exception\ResponseException;
+use Ulime\Backoffice\User\Service\SessionService;
+use Ulime\Backoffice\User\Service\UserService;
+use Ulime\General\Renderer;
 
 /**
  * Class ArticleController
@@ -14,39 +18,64 @@ use Ulime\Backoffice\Article\Repository\ArticleRepository;
  */
 class ArticleController
 {
+    protected $renderer;
+    protected $userService;
+    protected $sessionService;
     protected $articlesRepository;
 
     /**
      * ArticleController constructor.
+     * @param Renderer $renderer
+     * @param UserService $userService
+     * @param SessionService $sessionService
      * @param ArticleRepository $articleRepository
      */
-    public function __construct(ArticleRepository $articleRepository)
+    public function __construct(
+        Renderer $renderer,
+        UserService $userService,
+        SessionService $sessionService,
+        ArticleRepository $articleRepository
+    )
     {
+        $this->renderer = $renderer;
+        $this->userService = $userService;
+        $this->sessionService = $sessionService;
         $this->articlesRepository = $articleRepository;
     }
 
     /**
-     * @param Application $app
+     * @param Request $request
      * @return Response
      */
-    public function articlesList(Application $app): Response
+    public function articlesList(Request $request): Response
     {
-        return $this->getHtmlResponse(
-            $app,
+        try {
+            $this->sessionService->requireUserId($request->getSession());
+        } catch (ResponseException $e) {
+            return $e->getResponse();
+        }
+
+        return $this->renderer->getHtmlResponse(
             '/backoffice/article/article_list',
             [
                 'articles' => $this->articlesRepository->getArticles()
-            ]
+            ],
+            $request->getSession()
         );
     }
 
     /**
-     * @param Application $app
      * @param Request $request
      * @return Response
      */
-    public function editArticle(Application $app, Request $request): Response
+    public function editArticle(Request $request): Response
     {
+        try {
+            $this->sessionService->requireUserId($request->getSession());
+        } catch (ResponseException $e) {
+            return $e->getResponse();
+        }
+
         $articleName = $request->get('name');
         $isSubmitted = $request->get('data')['submit'];
 
@@ -64,14 +93,14 @@ class ArticleController
             $data = $this->getArticleFormData($articleName);
         }
 
-        return $this->getHtmlResponse(
-            $app,
+        return $this->renderer->getHtmlResponse(
             '/backoffice/article/article_edit',
             [
                 'name' => $articleName,
                 'data' => $data ?? [],
                 'errors' => $errors ?? []
-            ]
+            ],
+            $request->getSession()
         );
     }
 
@@ -101,6 +130,12 @@ class ArticleController
      */
     public function deleteArticle(Request $request): RedirectResponse
     {
+        try {
+            $this->sessionService->requireUserId($request->getSession());
+        } catch (ResponseException $e) {
+            return $e->getResponse();
+        }
+
         $this->articlesRepository->deleteArticle($request->get('name'));
 
         return new RedirectResponse('/backoffice/articles');
@@ -147,25 +182,5 @@ class ArticleController
         }
 
         return $errors;
-    }
-
-    /**
-     * @param Application $app
-     * @param string $template
-     * @param array $content
-     * @return Response
-     */
-    protected function getHtmlResponse(Application $app, string $template, array $content = []): Response
-    {
-        return new Response(
-            $app['twig']->render(
-                sprintf(
-                    '%s%s',
-                    $template,
-                    '.html.twig'
-                ),
-                $content
-            )
-        );
     }
 }

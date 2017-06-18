@@ -17,6 +17,7 @@ class SectionRepository
 
     /**
      * SectionRepository constructor.
+     * @param Client $client
      */
     public function __construct(Client $client)
     {

@@ -1,5 +1,6 @@
 <?php
 namespace Ulime\Backoffice\Article\Model;
+
 /**
  * Class Article
  * @package Ulime\Backoffice\Article\Model

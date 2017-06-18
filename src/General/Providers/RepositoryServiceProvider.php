@@ -1,5 +1,5 @@
 <?php
-namespace Ulime\Backoffice;
+namespace Ulime\General\Providers;
 
 
 use MongoDB\Client;
@@ -8,6 +8,7 @@ use Pimple\ServiceProviderInterface;
 use Ulime\Backoffice\Article\Repository\ArticleRepository;
 use Ulime\Backoffice\Category\Repository\CategoryRepository;
 use Ulime\Backoffice\Section\Repository\SectionRepository;
+use Ulime\Frontoffice\General\Repository\GeneralRepository;
 
 class RepositoryServiceProvider implements ServiceProviderInterface
 {
@@ -36,6 +37,10 @@ class RepositoryServiceProvider implements ServiceProviderInterface
 
         $app['backoffice.section.repository'] = function () use ($app) {
             return new SectionRepository($app['mongo.client']);
+        };
+
+        $app['frontoffice.general.repository'] = function () use ($app) {
+            return new GeneralRepository($app['mongo.client']);
         };
     }
 }

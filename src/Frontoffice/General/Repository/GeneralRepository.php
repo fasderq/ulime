@@ -5,6 +5,7 @@ namespace Ulime\Frontoffice\General\Repository;
 use MongoDB\Client;
 use MongoDB\Model\BSONDocument;
 use Ulime\Frontoffice\General\Model\Article;
+use Ulime\Frontoffice\General\Model\Section;
 
 /**
  * Class GeneralRepository
@@ -25,7 +26,7 @@ class GeneralRepository
     /**
      * @return Article[]
      */
-    public function getPopularArticles()
+    public function getPopularArticles(): array
     {
         $data = $this->client
             ->selectCollection('ulime', 'articles')
@@ -40,11 +41,37 @@ class GeneralRepository
     }
 
 
+    public function getSections(): array
+    {
+        $data = $this->client
+            ->selectCollection('ulime', 'section')
+            ->find()
+            ->toArray();
+
+        $sections = [];
+        foreach ($data as $section) {
+            $sections[] = $this->documentToSection($section);
+        }
+
+        return $sections;
+    }
+
+    /**
+     * @param BSONDocument $document
+     * @return Section
+     */
+    protected function documentToSection(BSONDocument $document): Section
+    {
+        return new Section(
+            $document->name,
+            $document->title
+        );
+    }
     /**
      * @param BSONDocument $document
      * @return Article
      */
-    public function documentToArticle(BSONDocument $document): Article
+    protected function documentToArticle(BSONDocument $document): Article
     {
         return new Article(
             $document->title,

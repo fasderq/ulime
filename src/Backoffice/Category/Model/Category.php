@@ -2,8 +2,6 @@
 namespace Ulime\Backoffice\Category\Model;
 
 
-use Ulime\Backoffice\Article\Model\Article;
-
 /**
  * Class Category
  * @package Ulime\Backoffice\Category\Model

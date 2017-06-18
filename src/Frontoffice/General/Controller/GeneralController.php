@@ -7,13 +7,21 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Ulime\Frontoffice\General\Repository\GeneralRepository;
 
+/**
+ * Class GeneralController
+ * @package Ulime\Frontoffice\General\Controller
+ */
 class GeneralController
 {
     protected $repository;
 
-    public function __construct()
+    /**
+     * GeneralController constructor.
+     * @param GeneralRepository $generalRepository
+     */
+    public function __construct(GeneralRepository $generalRepository)
     {
-        $this->repository = new GeneralRepository();
+        $this->repository = $generalRepository;
     }
 
     /**
@@ -35,15 +43,13 @@ class GeneralController
      * @param Application $app
      * @return Response
      */
-    public function catalogList(Application $app): Response
+    public function sections(Application $app): Response
     {
-
-
         return $this->getHtmlResponse(
             $app,
-            '/frontoffice/general/catalog/catalog_list',
+            '/frontoffice/general/catalog',
             [
-
+                'sections' => $this->repository->getSections()
             ]
         );
     }

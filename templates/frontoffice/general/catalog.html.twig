@@ -1,0 +1,15 @@
+{% extends '/frontoffice/layout.html.twig' %}
+
+
+{% block content %}
+
+
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            {% for section in sections %}
+                <a href="/section/{{ section.getName() }}">{{ section.getTitle() }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

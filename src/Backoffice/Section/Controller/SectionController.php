@@ -1,14 +1,16 @@
 <?php
 namespace Ulime\Backoffice\Section\Controller;
 
-use Silex\Application;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Ulime\Backoffice\Category\Model\Category;
 use Ulime\Backoffice\Category\Repository\CategoryRepository;
+use Ulime\General\Renderer;
 use Ulime\Backoffice\Section\Model\Section;
 use Ulime\Backoffice\Section\Repository\SectionRepository;
+use Ulime\Backoffice\User\Exception\ResponseException;
+use Ulime\Backoffice\User\Service\SessionService;
 
 /**
  * Class SectionController
@@ -16,44 +18,63 @@ use Ulime\Backoffice\Section\Repository\SectionRepository;
  */
 class SectionController
 {
+    protected $renderer;
     protected $sectionRepository;
     protected $categoryRepository;
+    protected $session;
 
     /**
      * SectionController constructor.
+     * @param Renderer $renderer
      * @param SectionRepository $sectionRepository
      * @param CategoryRepository $categoryRepository
+     * @param SessionService $sessionService
      */
     public function __construct(
+        Renderer $renderer,
         SectionRepository $sectionRepository,
-        CategoryRepository $categoryRepository
+        CategoryRepository $categoryRepository,
+        SessionService $sessionService
     ) {
+        $this->renderer = $renderer;
         $this->sectionRepository = $sectionRepository;
         $this->categoryRepository = $categoryRepository;
+        $this->session = $sessionService;
     }
 
     /**
-     * @param Application $app
+     * @param Request $request
      * @return Response
      */
-    public function sectionsList(Application $app): Response
+    public function sectionsList(Request $request): Response
     {
-        return $this->getHtmlResponse(
-            $app,
+        try {
+            $this->session->requireUserId($request->getSession());
+        } catch (ResponseException $e) {
+            return $e->getResponse();
+        }
+
+        return $this->renderer->getHtmlResponse(
             '/backoffice/section/section_list',
             [
                 'sections' => $this->sectionRepository->getSections()
-            ]
+            ],
+            $request->getSession()
         );
     }
 
     /**
-     * @param Application $app
      * @param Request $request
      * @return Response
      */
-    public function editSection(Application $app, Request $request): Response
+    public function editSection(Request $request): Response
     {
+        try {
+            $this->session->requireUserId($request->getSession());
+        } catch (ResponseException $e) {
+            return $e->getResponse();
+        }
+
         $sectionName = $request->get('name');
 
         if ($request->get('data')['submit']) {
@@ -69,15 +90,15 @@ class SectionController
             $data = $this->getSectionFormData($sectionName);
         }
 
-        return $this->getHtmlResponse(
-            $app,
+        return $this->renderer->getHtmlResponse(
             '/backoffice/section/section_edit',
             [
                 'name' => $sectionName,
                 'data' => $data ?? [],
                 'errors' => $errors ?? [],
                 'categories' => $this->categoryRepository->getCategories()
-            ]
+            ],
+            $request->getSession()
         );
     }
 
@@ -95,7 +116,6 @@ class SectionController
                 $categories[] = $this->categoryRepository->getCategoryByName($categoryName);
             }
         }
-
 
         $section = new Section(
             $data['title'],
@@ -116,6 +136,12 @@ class SectionController
      */
     public function deleteSection(Request $request): RedirectResponse
     {
+        try {
+            $this->session->requireUserId($request->getSession());
+        } catch (ResponseException $e) {
+            return $e->getResponse();
+        }
+
         $this->sectionRepository->deleteSection($request->get('name'));
 
         return new RedirectResponse('/backoffice/sections');
@@ -164,25 +190,5 @@ class SectionController
         }
 
         return $errors;
-    }
-
-    /**
-     * @param Application $app
-     * @param string $template
-     * @param array $content
-     * @return Response
-     */
-    protected function getHtmlResponse(Application $app, string $template, array $content = []): Response
-    {
-        return new Response(
-            $app['twig']->render(
-                sprintf(
-                    '%s%s',
-                    $template,
-                    '.html.twig'
-                ),
-                $content
-            )
-        );
     }
 }

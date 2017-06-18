@@ -10,6 +10,10 @@ use Ulime\Backoffice\Article\Model\Article;
 use Ulime\Backoffice\Article\Repository\ArticleRepository;
 use Ulime\Backoffice\Category\Model\Category;
 use Ulime\Backoffice\Category\Repository\CategoryRepository;
+use Ulime\Backoffice\User\Exception\ResponseException;
+use Ulime\Backoffice\User\Service\SessionService;
+use Ulime\Backoffice\User\Service\UserService;
+use Ulime\General\Renderer;
 
 /**
  * Class CategoryController
@@ -17,44 +21,67 @@ use Ulime\Backoffice\Category\Repository\CategoryRepository;
  */
 class CategoryController
 {
+    protected $renderer;
+    protected $userService;
+    protected $sessionService;
     protected $categoryRepository;
     protected $articleRepository;
 
     /**
      * CategoryController constructor.
+     * @param Renderer $renderer
+     * @param UserService $userService
+     * @param SessionService $sessionService
      * @param CategoryRepository $categoryRepository
      * @param ArticleRepository $articleRepository
      */
     public function __construct(
+        Renderer $renderer,
+        UserService $userService,
+        SessionService $sessionService,
         CategoryRepository $categoryRepository,
         ArticleRepository $articleRepository
     ) {
+        $this->renderer = $renderer;
+        $this->userService = $userService;
+        $this->sessionService = $sessionService;
         $this->categoryRepository = $categoryRepository;
         $this->articleRepository = $articleRepository;
     }
 
     /**
-     * @param Application $app
+     * @param Request $request
      * @return Response
      */
-    public function categoryList(Application $app): Response
+    public function categoryList(Request $request): Response
     {
-        return $this->getHtmlResponse(
-            $app,
+        try {
+            $this->sessionService->requireUserId($request->getSession());
+        } catch (ResponseException $e) {
+            return $e->getResponse();
+        }
+
+        return $this->renderer->getHtmlResponse(
             '/backoffice/category/category_list',
             [
                 'categories' => $this->categoryRepository->getCategories()
-            ]
+            ],
+            $request->getSession()
         );
     }
 
     /**
-     * @param Application $app
      * @param Request $request
      * @return Response
      */
-    public function editCategory(Application $app, Request $request): Response
+    public function editCategory(Request $request): Response
     {
+        try {
+            $this->sessionService->requireUserId($request->getSession());
+        } catch (ResponseException $e) {
+            return $e->getResponse();
+        }
+
         $categoryName = $request->get('name');
 
         if ($request->get('data')['submit']) {
@@ -70,15 +97,15 @@ class CategoryController
             $data = $this->getCategoryFormData($categoryName);
         }
 
-        return $this->getHtmlResponse(
-            $app,
+        return $this->renderer->getHtmlResponse(
             '/backoffice/category/category_edit',
             [
                 'id' => $categoryName,
                 'errors' => $errors ?? [],
                 'data' => $data ?? [],
                 'articles' => $this->articleRepository->getArticles()
-            ]
+            ],
+            $request->getSession()
         );
     }
 
@@ -88,6 +115,12 @@ class CategoryController
      */
     public function deleteCategory(Request $request): RedirectResponse
     {
+        try {
+            $this->sessionService->requireUserId($request->getSession());
+        } catch (ResponseException $e) {
+            return $e->getResponse();
+        }
+
         $this->categoryRepository->deleteCategory($request->get('name'));
 
         return new RedirectResponse('/backoffice/categories');

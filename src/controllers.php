@@ -7,11 +7,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 /*Frontoffice*/
 
-//$app->get('/', $action(GeneralController::class, 'index'));
+$app->get('/', 'frontoffice.general.controller:index');
+$app->get('/sections', 'frontoffice.general.controller:sections');
 
 
 
 /*Backoffice*/
+
+/*Auth*/
+
+$app->get('/backoffice', 'backoffice.auth.controller:index');
+$app->get('/backoffice/login', 'backoffice.auth.controller:login');
+$app->post('/backoffice/login', 'backoffice.auth.controller:login');
+$app->get('/backoffice/logout', 'backoffice.auth.controller:logout');
 
 /*Articles*/
 $app->get('/backoffice/articles', 'backoffice.article.controller:articlesList');

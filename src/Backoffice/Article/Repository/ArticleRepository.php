@@ -36,7 +36,7 @@ class ArticleRepository
 
         if (!empty($article)) {
             if ($article instanceof BSONDocument) {
-                return $this->rowToArticle($article);
+                return $this->documentToArticle($article);
             } else {
                 throw new \Exception('db error');
             }
@@ -56,7 +56,7 @@ class ArticleRepository
 
         $articles = [];
         foreach ($data as $article) {
-            $articles[] = $this->rowToArticle($article);
+            $articles[] = $this->documentToArticle($article);
         }
 
         return $articles;
@@ -129,7 +129,7 @@ class ArticleRepository
      * @param BSONDocument $row
      * @return Article
      */
-    public function rowToArticle(BSONDocument $row): Article
+    public function documentToArticle(BSONDocument $row): Article
     {
         return new Article(
             $row->name,

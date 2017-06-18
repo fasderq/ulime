@@ -91,7 +91,7 @@ class CategoryRepository
             ->selectCollection('ulime', 'section')
             ->updateMany(
                 [
-                    'articles' => [
+                    'categories' => [
                         '$elemMatch' => [
                             'name' => $name
                         ]
