@@ -200,24 +200,4 @@ class CategoryController
 
         return $errors;
     }
-
-    /**
-     * @param Application $app
-     * @param string $template
-     * @param array $content
-     * @return Response
-     */
-    protected function getHtmlResponse(Application $app, string $template, array $content = []): Response
-    {
-        return new Response(
-            $app['twig']->render(
-                sprintf(
-                    '%s%s',
-                    $template,
-                    '.html.twig'
-                ),
-                $content
-            )
-        );
-    }
 }

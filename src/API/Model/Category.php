@@ -1,9 +1,6 @@
 <?php
 namespace Ulime\API\Model;
 
-
-use Ulime\Backoffice\Article\Model\Article;
-
 /**
  * Class Category
  * @package Ulime\API\Model

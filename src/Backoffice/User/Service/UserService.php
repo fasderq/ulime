@@ -7,6 +7,7 @@ use Ulime\Backoffice\User\Model\User;
 class UserService
 {
     /**
+     * @param int $userId
      * @return User
      */
     public function getUser(int $userId): User

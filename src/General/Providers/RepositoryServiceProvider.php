@@ -5,6 +5,7 @@ namespace Ulime\General\Providers;
 use MongoDB\Client;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Ulime\API\Repository\ApiRepository;
 use Ulime\Backoffice\Article\Repository\ArticleRepository;
 use Ulime\Backoffice\Category\Repository\CategoryRepository;
 use Ulime\Backoffice\Section\Repository\SectionRepository;
@@ -37,6 +38,10 @@ class RepositoryServiceProvider implements ServiceProviderInterface
 
         $app['backoffice.section.repository'] = function () use ($app) {
             return new SectionRepository($app['mongo.client']);
+        };
+
+        $app['api.repository'] = function () use ($app) {
+            return new ApiRepository($app['mongo.client']);
         };
 
         $app['frontoffice.general.repository'] = function () use ($app) {

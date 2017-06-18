@@ -4,6 +4,7 @@ namespace Ulime\General\Providers;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Ulime\API\Controller\ApiController;
 use Ulime\Backoffice\Article\Controller\ArticleController;
 use Ulime\Backoffice\Category\Controller\CategoryController;
 use Ulime\Backoffice\Section\Controller\SectionController;
@@ -59,8 +60,17 @@ class ControllerServiceProvider implements ServiceProviderInterface
             );
         };
 
+        $app['api.controller'] = function () use ($app) {
+            return new ApiController(
+                $app['api.repository']
+            );
+        };
+
         $app['frontoffice.general.controller'] = function () use ($app) {
-            return new GeneralController($app['frontoffice.general.repository']);
+            return new GeneralController(
+                $app['renderer'],
+                $app['frontoffice.general.repository']
+            );
         };
     }
 }

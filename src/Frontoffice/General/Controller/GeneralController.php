@@ -6,6 +6,7 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Ulime\Frontoffice\General\Repository\GeneralRepository;
+use Ulime\General\Renderer;
 
 /**
  * Class GeneralController
@@ -13,40 +14,43 @@ use Ulime\Frontoffice\General\Repository\GeneralRepository;
  */
 class GeneralController
 {
+    protected $renderer;
     protected $repository;
 
     /**
      * GeneralController constructor.
+     * @param Renderer $renderer
      * @param GeneralRepository $generalRepository
      */
-    public function __construct(GeneralRepository $generalRepository)
-    {
+    public function __construct(
+        Renderer $renderer,
+        GeneralRepository $generalRepository
+    ) {
+        $this->renderer = $renderer;
         $this->repository = $generalRepository;
     }
 
     /**
-     * @param Application $app
+     * @param Request $request
      * @return Response
      */
-    public function index(Application $app): Response
+    public function index(Request $request): Response
     {
-        return $this->getHtmlResponse(
-            $app,
+        return $this->renderer->getHtmlResponse(
             '/frontoffice/general/index',
             [
                 'articles' => $this->repository->getPopularArticles()
-            ]
+            ],
+            $request->getSession()
         );
     }
 
     /**
-     * @param Application $app
      * @return Response
      */
-    public function sections(Application $app): Response
+    public function sections(): Response
     {
-        return $this->getHtmlResponse(
-            $app,
+        return $this->renderer->getHtmlResponse(
             '/frontoffice/general/catalog',
             [
                 'sections' => $this->repository->getSections()
@@ -54,34 +58,5 @@ class GeneralController
         );
     }
 
-    public function catalog(Application $app, Request $request): Response
-    {
-        return $this->getHtmlResponse(
-            $app,
-            '/frontoffice/general/catalog/catalog_single',
-            [
 
-            ]
-        );
-    }
-
-    /**
-     * @param Application $app
-     * @param string $template
-     * @param array $content
-     * @return Response
-     */
-    protected function getHtmlResponse(Application $app, string $template, array $content = []): Response
-    {
-        return new Response(
-            $app['twig']->render(
-                sprintf(
-                    '%s%s',
-                    $template,
-                    '.html.twig'
-                ),
-                $content
-            )
-        );
-    }
 }

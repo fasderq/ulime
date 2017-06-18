@@ -40,8 +40,8 @@ $app->post('/backoffice/section/{name}/edit', 'backoffice.section.controller:edi
 $app->get('/backoffice/section/{name}/delete', 'backoffice.section.controller:deleteSection');
 
 /*API*/
-//$app->get('/categories', $action(ApiController::class, 'getCategories'));
-//$app->get('/category/{name}', $action(ApiController::class, 'getArticles'));
+$app->get('/api/categories', 'api.controller:getCategories');
+$app->get('/api/category/{name}', 'api.controller:getArticles');
 
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {

@@ -1,5 +1,5 @@
 <?php
-namespace Ulime\Frontoffice;
+namespace Ulime\General\Providers;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;

@@ -7,16 +7,17 @@ use MongoDB\Model\BSONDocument;
 use Ulime\API\Model\Article;
 use Ulime\API\Model\Category;
 
-class CategoryRepository
+class ApiRepository
 {
     protected $client;
 
     /**
-     * CategoryRepository constructor.
+     * ApiRepository constructor.
+     * @param Client $client
      */
-    public function __construct()
+    public function __construct(Client $client)
     {
-        $this->client = new Client();
+        $this->client = $client;
     }
 
     /**
@@ -92,8 +93,8 @@ class CategoryRepository
         }
 
         return new Category(
-            $row->name,
             $row->title,
+            $row->name,
             $articles
         );
     }

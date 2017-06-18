@@ -5,7 +5,7 @@ namespace Ulime\API\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Ulime\API\Repository\CategoryRepository;
+use Ulime\API\Repository\ApiRepository;
 
 /**
  * Class ApiController
@@ -13,14 +13,15 @@ use Ulime\API\Repository\CategoryRepository;
  */
 class ApiController
 {
-    protected $categoryRepository;
+    protected $apiRepository;
 
     /**
      * ApiController constructor.
+     * @param ApiRepository $apiRepository
      */
-    public function __construct()
+    public function __construct(ApiRepository $apiRepository)
     {
-        $this->categoryRepository = new CategoryRepository();
+        $this->apiRepository = $apiRepository;
     }
 
     /**
@@ -29,7 +30,7 @@ class ApiController
     public function getCategories(): string
     {
         return $this->getJsonResponse(
-            $this->categoryRepository->getCategories()
+            $this->apiRepository->getCategories()
         )->getContent();
     }
 
@@ -40,7 +41,7 @@ class ApiController
     public function getArticles(Request $request): string
     {
         return $this->getJsonResponse(
-            $this->categoryRepository->getArticlesByCategory(
+            $this->apiRepository->getArticlesByCategory(
                 $request->get('name')
             )
         )->getContent();
