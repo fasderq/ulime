@@ -135,7 +135,8 @@ class ArticleRepository
             $row->name,
             $row->title,
             $row->label,
-            $row->body
+            $row->body,
+            $row->img
         );
     }
 
@@ -149,7 +150,8 @@ class ArticleRepository
             'name' => $article->getName(),
             'title' => $article->getTitle(),
             'label' => $article->getLabel(),
-            'body' => $article->getBody()
+            'body' => $article->getBody(),
+            'img' => $article->getImage()
         ];
     }
 }

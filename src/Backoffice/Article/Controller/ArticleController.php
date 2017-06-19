@@ -2,6 +2,7 @@
 namespace Ulime\Backoffice\Article\Controller;
 
 use Silex\Application;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -80,8 +81,11 @@ class ArticleController
         $isSubmitted = $request->get('data')['submit'];
 
         if ($isSubmitted) {
+            $file = $request->files->get('data')['file'];
+
             $data = $request->get('data');
-            $errors = $this->validateArticleFormData($data);
+            $errors = $this->validateArticleFormData($data, $file ?? null);
+            $data['file'] = $file;
 
             if (empty($errors)) {
                 $this->saveArticleFormData($data, $articleName);
@@ -110,11 +114,25 @@ class ArticleController
      */
     protected function saveArticleFormData(array $data, ?string $articleName = null): void
     {
+        $file = $data['file'];
+
+        $type = explode('/', $file->getMimeType());
+
+        $file->move(
+            __DIR__ . '/../../../../web/images',
+            $imgName = sprintf(
+                '%s.%s',
+                $data['name'],
+                array_pop($type)
+            )
+        );
+
         $article = new Article(
             $data['name'],
             $data['title'],
             $data['label'],
-            $data['body']
+            $data['body'],
+            $imgName
         );
 
         if (!empty($articleName)) {
@@ -159,9 +177,10 @@ class ArticleController
 
     /**
      * @param array $data
+     * @param UploadedFile|null $file
      * @return array
      */
-    protected function validateArticleFormData(array $data): array
+    protected function validateArticleFormData(array $data, ?UploadedFile $file = null): array
     {
         $errors = [];
 
@@ -179,6 +198,16 @@ class ArticleController
 
         if (empty(trim($data['body']))) {
             $errors['body'] = 'body is required';
+        }
+
+        $mimeType = $file->getClientMimeType();
+
+        if (empty($file)) {
+            $errors['image'] = 'image is required';
+        } elseif ($file->getError()) {
+            $errors['image_error'] = 'image error';
+        } elseif ('image/jpeg' !== $mimeType && 'image/png' !== $mimeType) {
+            $errors['image_format'] = 'image format must be .jpg or png';
         }
 
         return $errors;

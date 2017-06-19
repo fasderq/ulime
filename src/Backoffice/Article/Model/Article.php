@@ -11,6 +11,7 @@ class Article
     protected $title;
     protected $label;
     protected $body;
+    protected $img;
 
     /**
      * Article constructor.
@@ -18,17 +19,20 @@ class Article
      * @param string $title
      * @param string $label
      * @param string $body
+     * @param string $img
      */
     public function __construct(
         string $name,
         string $title,
         string $label,
-        string $body
+        string $body,
+        ?string $img = null
     ) {
         $this->name = $name;
         $this->title = $title;
         $this->label = $label;
         $this->body = $body;
+        $this->img = $img;
     }
 
     public function getName(): string
@@ -58,5 +62,13 @@ class Article
     public function getBody(): string
     {
         return $this->body;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getImage(): ?string
+    {
+        return $this->img;
     }
 }

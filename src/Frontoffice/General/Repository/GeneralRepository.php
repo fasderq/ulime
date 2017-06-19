@@ -40,7 +40,9 @@ class GeneralRepository
         return $articles;
     }
 
-
+    /**
+     * @return Section[]
+     */
     public function getSections(): array
     {
         $data = $this->client
@@ -77,6 +79,7 @@ class GeneralRepository
             $document->title,
             $document->label,
             $document->body,
+            $document->img,
             $document->metrics->count ?? null
         );
     }

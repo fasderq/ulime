@@ -158,7 +158,8 @@ class CategoryRepository
             $row->name,
             $row->title,
             $row->label,
-            $row->body
+            $row->body,
+            $row->img ?? null
         );
     }
 
@@ -190,7 +191,8 @@ class CategoryRepository
             'name' => $article->getName(),
             'title' => $article->getTitle(),
             'label' => $article->getLabel(),
-            'body' => $article->getBody()
+            'body' => $article->getBody(),
+            'img' => $article->getImage()
         ];
     }
 }

@@ -5,6 +5,8 @@
         {% for article in articles %}
             <div class="row">
                 <div class="col-md-6 col-md-offset-3">
+                    <h1>{{ article.getImage() }}</h1>
+                    <img src="" alt="">
                     <div class="page-header"><h1>{{ article.getTitle() }}</h1></div>
                     <h3>{{ article.getLabel() }}</h3>
                     <div>{{ article.getBody() }}</div>
